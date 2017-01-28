@@ -58,11 +58,21 @@ class TokenGenerator
     }
 
     /**
-     * @param Signer $signer
+     * @param string $signer
      */
-    public function setSigner(Signer $signer)
+    public function setSigner($signer)
     {
-        $this->signer = $signer;
+        if (!class_exists($signer)) {
+            throw new \InvalidArgumentException(sprintf('Signer class %s does not exist', $signer));
+        }
+
+        $signerObj = new $signer();
+
+        if (!$this->signer instanceof Signer) {
+            throw new \InvalidArgumentException(sprintf('Signer class %s does not implement Lcobucci\JWT\Signer Interface', $signer));
+        }
+
+        $this->signer = $signerObj;
     }
 
     /**

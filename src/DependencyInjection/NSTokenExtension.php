@@ -22,12 +22,12 @@ class NSTokenExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $container->setParameter('ns_token.id',$config['id']);
-        $container->setParameter('ns_token.key',$config['key']);
-        $container->setParameter('ns_token.issuer',$config['issuer']);
-        $container->setParameter('ns_token.signer',$config['signer']);
+        $container->setParameter('ns_token.id', $config['id']);
+        $container->setParameter('ns_token.key', $config['key']);
+        $container->setParameter('ns_token.issuer', $config['issuer']);
+        $container->setParameter('ns_token.signer', $config['signer']);
 
-        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');
     }
 }

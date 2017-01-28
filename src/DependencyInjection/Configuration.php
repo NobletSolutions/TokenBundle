@@ -25,7 +25,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('id')->cannotBeEmpty()->end()
                 ->scalarNode('key')->cannotBeEmpty()->end()
                 ->scalarNode('issuer')->cannotBeEmpty()->end()
-                ->scalarNode('signer')->defaultValue('Lcobucci\JWT\Signer\Rsa\Sha256')->end()
+                ->scalarNode('signer')->defaultValue('Lcobucci\JWT\Signer\Hmac\Sha256')->end()
             ->end();
 
         return $treeBuilder;
