@@ -68,7 +68,7 @@ class TokenGenerator
 
         $signerObj = new $signer();
 
-        if (!$this->signer instanceof Signer) {
+        if (!$signerObj instanceof Signer) {
             throw new \InvalidArgumentException(sprintf('Signer class %s does not implement Lcobucci\JWT\Signer Interface', $signer));
         }
 
