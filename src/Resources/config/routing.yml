@@ -1,3 +1,0 @@
-ns_token_homepage:
-    path:     /
-    defaults: { _controller: NSTokenBundle:Default:index }
