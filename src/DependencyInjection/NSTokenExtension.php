@@ -26,6 +26,7 @@ class NSTokenExtension extends Extension
         $container->setParameter('ns_token.key', $config['key']);
         $container->setParameter('ns_token.issuer', $config['issuer']);
         $container->setParameter('ns_token.signer', $config['signer']);
+        $container->setParameter('ns_token.audience', isset($config['audience']) ? $config['audience'] : null);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');

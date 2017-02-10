@@ -25,6 +25,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('id')->cannotBeEmpty()->end()
                 ->scalarNode('key')->cannotBeEmpty()->end()
                 ->scalarNode('issuer')->cannotBeEmpty()->end()
+                ->scalarNode('audience')->end()
                 ->scalarNode('signer')->defaultValue('Lcobucci\JWT\Signer\Hmac\Sha256')->end()
             ->end();
 

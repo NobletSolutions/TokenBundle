@@ -18,6 +18,9 @@ class TokenGenerator
     /** @var string */
     private $issuer;
 
+    /** @var string */
+    private $audience;
+
     /** @var int|null */
     private $expiration = 172800;
 
@@ -33,16 +36,18 @@ class TokenGenerator
     /**
      * TokenGenerator constructor.
      *
-     * @param $id
-     * @param $key
-     * @param $issuer
-     * @param $expiration
+     * @param string $id
+     * @param string $key
+     * @param string $issuer
+     * @param string|null $audience
+     * @param string|null $expiration
      */
-    public function __construct($id, $key, $issuer, $expiration = null)
+    public function __construct($id, $key, $issuer, $audience = null, $expiration = null)
     {
         $this->id = $id;
         $this->key = $key;
         $this->issuer = $issuer;
+        $this->audience = ($audience !== null) ? $audience : $this->issuer;
 
         if ($expiration) {
             $this->expiration = $expiration;
@@ -86,7 +91,7 @@ class TokenGenerator
     {
         $builder = new Builder();
         $builder->setIssuer($this->issuer)
-            ->setAudience($this->issuer)
+            ->setAudience($this->audience)
             ->setId($this->id)
             ->setNotBefore(time())
             ->setExpiration(time() + $this->expiration)
@@ -149,7 +154,7 @@ class TokenGenerator
         $data = new ValidationData();
         $data->setId($this->id);
         $data->setIssuer($this->issuer);
-        $data->setAudience($this->issuer);
+        $data->setAudience($this->audience);
 
         if (!$token->validate($data)) {
             throw new InvalidTokenException('Invalid token');
