@@ -3,6 +3,7 @@ VERSION 0  INITIAL RELEASE
 ==========================
 
    Version 0.1 - Initial Release
+      12/05/2017 11:19  0.1.3  Non shared service
       10/02/2017 13:28  0.1.2  Added audience setting
       10/02/2017 09:21  0.1.1  Fixed routing issue
       09/02/2017 16:20  0.1.0  initial release
