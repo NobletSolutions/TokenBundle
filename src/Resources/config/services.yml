@@ -2,6 +2,7 @@ services:
   ns_token.generator:
     class: NS\TokenBundle\Generator\TokenGenerator
     arguments: [ '%ns_token.id%', '%ns_token.key%', '%ns_token.issuer%', '%ns_token.audience%' ]
+    shared: false
     calls:
       - [ setSigner, [ '%ns_token.signer%'] ]
 
