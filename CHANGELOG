@@ -3,6 +3,7 @@ VERSION 1  INITIAL 1.0 RELEASE
 ==============================
 
    Version 1.0 - Initial 1.0 release
+      31/07/2017 14:26  1.0.3  Added configuration for long/short seconds
       31/07/2017 12:46  1.0.2  Catch parse errors
       31/07/2017 12:31  1.0.1  Added extra field getter
       31/07/2017 12:22  1.0.0  initial release
