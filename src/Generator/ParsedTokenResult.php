@@ -57,10 +57,19 @@ class ParsedTokenResult
     }
 
     /**
+     * @param null $field
      * @return array
      */
-    public function getExtra()
+    public function getExtra($field = null)
     {
+        if ($field !== null) {
+            if (isset($this->extra[$field])) {
+                return $this->extra[$field];
+            }
+
+            throw new \InvalidArgumentException("Extra Field '$field' doesn't exist");
+        }
+
         return $this->extra;
     }
 }
