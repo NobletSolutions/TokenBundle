@@ -3,6 +3,7 @@
 namespace NS\TokenBundle\Tests\Generator;
 
 use Lcobucci\JWT\Signer\Hmac\Sha256;
+use NS\TokenBundle\Generator\InvalidTokenException;
 use NS\TokenBundle\Generator\TokenGenerator;
 
 class TokenGeneratorTest extends \PHPUnit_Framework_TestCase
@@ -113,6 +114,26 @@ class TokenGeneratorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($parsed->getEmail(), 'test@example.com');
         $this->assertFalse($parsed->hasExtra());
         $this->assertNull($parsed->getExtra());
+    }
+
+    /**
+     * @param $token
+     * @dataProvider getInvalidTokens
+     */
+    public function testInvalidToken($token)
+    {
+        $this->expectException(InvalidTokenException::class);
+
+        $generator = new TokenGenerator('id', 'key', 'issuer', 'audience');
+        $generator->decryptToken($token);
+    }
+
+    public function getInvalidTokens()
+    {
+        return [
+            ["something.totally.invalid"],
+            ["no dots"],
+        ];
     }
 }
 
