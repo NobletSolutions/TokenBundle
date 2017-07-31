@@ -145,7 +145,11 @@ class TokenGenerator
      */
     private function parseToken($tokenStr)
     {
-        $token = (new Parser())->parse($tokenStr);
+        try {
+            $token = (new Parser())->parse($tokenStr);
+        } catch (\Exception $exception) {
+            throw new InvalidTokenException('Invalid token', 400, $exception);
+        }
 
         if ($this->signer && !$token->verify($this->signer, $this->key)) {
             throw new InvalidTokenException('Invalid token');
