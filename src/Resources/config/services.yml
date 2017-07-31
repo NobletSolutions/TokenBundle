@@ -8,6 +8,6 @@ services:
 
   ns_token.twig_extension:
     class: NS\TokenBundle\Twig\TokenGeneratorExtension
-    arguments: [ '@ns_token.generator' ]
+    arguments: [ '@ns_token.generator', '%ns_token.short_expiration%', '%ns_token.long_expiration%' ]
     tags:
       - { name: twig.extension }

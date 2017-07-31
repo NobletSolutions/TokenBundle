@@ -27,6 +27,8 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('issuer')->cannotBeEmpty()->end()
                 ->scalarNode('audience')->end()
                 ->scalarNode('signer')->defaultValue('Lcobucci\JWT\Signer\Hmac\Sha256')->end()
+                ->scalarNode('short_expiration')->defaultValue(3600)->end()
+                ->scalarNode('long_expiration')->defaultValue(2592000)->end()
             ->end();
 
         return $treeBuilder;

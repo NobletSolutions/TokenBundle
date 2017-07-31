@@ -15,14 +15,24 @@ class TokenGeneratorExtension extends \Twig_Extension
     /** @var TokenGenerator */
     private $generator;
 
+    /** @var int */
+    private $short;
+
+    /** @var int */
+    private $long;
+
     /**
      * TwigTokenGeneratorExtension constructor.
      *
      * @param TokenGenerator $generator
+     * @param int $short
+     * @param int $long
      */
-    public function __construct(TokenGenerator $generator)
+    public function __construct(TokenGenerator $generator, $short = 3600, $long = 2592000)
     {
         $this->generator = $generator;
+        $this->short = $short;
+        $this->long = $long;
     }
 
     /**
@@ -46,7 +56,7 @@ class TokenGeneratorExtension extends \Twig_Extension
      */
     public function generateShortToken($id, $email, array $extraData = null)
     {
-        $this->generator->setExpiration(3600);
+        $this->generator->setExpiration($this->short);
         return $this->generateToken($id, $email, $extraData);
     }
 
@@ -59,7 +69,7 @@ class TokenGeneratorExtension extends \Twig_Extension
      */
     public function generateLongToken($id, $email, array $extraData = null)
     {
-        $this->generator->setExpiration(2592000);
+        $this->generator->setExpiration($this->long);
         return $this->generateToken($id, $email, $extraData);
     }
 
