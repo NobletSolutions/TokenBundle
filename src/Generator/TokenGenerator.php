@@ -108,7 +108,7 @@ class TokenGenerator
     /**
      * @param $tokenStr
      *
-     * @return array
+     * @return ParsedTokenResult
      *
      * @throws InvalidTokenException
      */
@@ -117,7 +117,7 @@ class TokenGenerator
         $token = $this->parseToken($tokenStr);
         $extra = $token->hasClaim('extra') ? unserialize($token->getClaim('extra')) : null;
 
-        return array($token->getClaim('userId'), $token->getClaim('email'), $extra);
+        return new ParsedTokenResult($token->getClaim('userId'), $token->getClaim('email'), $extra);
     }
 
     /**

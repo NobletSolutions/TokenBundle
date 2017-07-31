@@ -26,11 +26,12 @@ class TokenGeneratorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('none', $token->getHeader('alg'));
         $this->assertGreaterThanOrEqual($time + 3600, $token->getClaim('exp'));
         $this->assertGreaterThanOrEqual($time, $token->getClaim('nbf'));
-        list($id, $email, $extra) = $generator->decryptToken((string)$token);
+        $parsed = $generator->decryptToken((string)$token);
 
-        $this->assertEquals($id, 2);
-        $this->assertEquals($email, 'test@example.com');
-        $this->assertNull($extra);
+        $this->assertEquals($parsed->getId(), 2);
+        $this->assertEquals($parsed->getEmail(), 'test@example.com');
+        $this->assertFalse($parsed->hasExtra());
+        $this->assertNull($parsed->getExtra());
     }
 
     public function testTokenExtraData()
@@ -43,11 +44,12 @@ class TokenGeneratorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('issuer', $token->getClaim('iss'));
         $this->assertEquals('issuer', $token->getClaim('aud'));
         $this->assertEquals('none', $token->getHeader('alg'));
-        list($id, $email, $extra) = $generator->decryptToken((string)$token);
+        $parsed = $generator->decryptToken((string)$token);
 
-        $this->assertEquals($id, 2);
-        $this->assertEquals($email, 'test@example.com');
-        $this->assertEquals($params, $extra);
+        $this->assertEquals($parsed->getId(), 2);
+        $this->assertEquals($parsed->getEmail(), 'test@example.com');
+        $this->assertTrue($parsed->hasExtra());
+        $this->assertEquals($params, $parsed->getExtra());
     }
 
     public function testTokenWithNoAudience()
@@ -62,11 +64,13 @@ class TokenGeneratorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('none', $token->getHeader('alg'));
         $this->assertGreaterThanOrEqual($time + 172800, $token->getClaim('exp'));
         $this->assertGreaterThanOrEqual($time, $token->getClaim('nbf'));
-        list($id, $email, $extra) = $generator->decryptToken((string)$token);
 
-        $this->assertEquals($id, 2);
-        $this->assertEquals($email, 'test@example.com');
-        $this->assertNull($extra);
+        $parsed = $generator->decryptToken((string)$token);
+
+        $this->assertEquals($parsed->getId(), 2);
+        $this->assertEquals($parsed->getEmail(), 'test@example.com');
+        $this->assertFalse($parsed->hasExtra());
+        $this->assertNull($parsed->getExtra());
     }
 
     public function testTokenWithAudience()
@@ -81,11 +85,12 @@ class TokenGeneratorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('none', $token->getHeader('alg'));
         $this->assertGreaterThanOrEqual($time + 172800, $token->getClaim('exp'));
         $this->assertGreaterThanOrEqual($time, $token->getClaim('nbf'));
-        list($id, $email, $extra) = $generator->decryptToken((string)$token);
+        $parsed = $generator->decryptToken((string)$token);
 
-        $this->assertEquals($id, 2);
-        $this->assertEquals($email, 'test@example.com');
-        $this->assertNull($extra);
+        $this->assertEquals($parsed->getId(), 2);
+        $this->assertEquals($parsed->getEmail(), 'test@example.com');
+        $this->assertFalse($parsed->hasExtra());
+        $this->assertNull($parsed->getExtra());
     }
 
     public function testTokenWithSigner()
@@ -102,12 +107,12 @@ class TokenGeneratorTest extends \PHPUnit_Framework_TestCase
         $this->assertGreaterThanOrEqual($time, $token->getClaim('nbf'));
 
         $this->assertEquals('HS256', $token->getHeader('alg'));
+        $parsed = $generator->decryptToken((string)$token);
 
-        list($id, $email, $extra) = $generator->decryptToken((string)$token);
-
-        $this->assertEquals($id, 2);
-        $this->assertEquals($email, 'test@example.com');
-        $this->assertNull($extra);
+        $this->assertEquals($parsed->getId(), 2);
+        $this->assertEquals($parsed->getEmail(), 'test@example.com');
+        $this->assertFalse($parsed->hasExtra());
+        $this->assertNull($parsed->getExtra());
     }
 }
 
