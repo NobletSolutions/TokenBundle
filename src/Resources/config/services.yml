@@ -1,13 +1,19 @@
 services:
-  ns_token.generator:
-    class: NS\TokenBundle\Generator\TokenGenerator
+  NS\TokenBundle\Generator\TokenGenerator:
     arguments: [ '%ns_token.id%', '%ns_token.key%', '%ns_token.issuer%', '%ns_token.audience%' ]
     shared: false
     calls:
       - [ setSigner, [ '%ns_token.signer%'] ]
 
-  ns_token.twig_extension:
-    class: NS\TokenBundle\Twig\TokenGeneratorExtension
-    arguments: [ '@ns_token.generator', '%ns_token.short_expiration%', '%ns_token.long_expiration%' ]
+  NS\TokenBundle\Twig\TokenGeneratorExtension:
+    arguments: [ '@NS\TokenBundle\Generator\TokenGenerator', '%ns_token.short_expiration%', '%ns_token.long_expiration%' ]
     tags:
       - { name: twig.extension }
+
+  ns_token.generator:
+    alias: NS\TokenBundle\Generator\TokenGenerator
+    public: true
+
+  ns_token.twig_extension:
+    alias: NS\TokenBundle\Twig\TokenGeneratorExtension
+    public: true
