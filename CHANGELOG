@@ -3,6 +3,7 @@ VERSION 1  INITIAL 1.0 RELEASE
 ==============================
 
    Version 1.0 - Initial 1.0 release
+      13/06/2018 10:43  1.0.6  SF4 supported
       25/01/2018 11:31  1.0.5  Private Service
       25/01/2018 11:30  1.0.4  Support SF 4.0
       31/07/2017 14:26  1.0.3  Added configuration for long/short seconds
