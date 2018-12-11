@@ -116,6 +116,16 @@ class TokenGeneratorTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($parsed->getExtra());
     }
 
+    public function testGeneratorWithSignerButUnsignedToken()
+    {
+        $this->expectException(InvalidTokenException::class);
+        $generator = new TokenGenerator('id', 'key', 'issuer', 'audience');
+
+        $token = $generator->getToken(2, 'test@example.com');
+        $generator->setSigner(Sha256::class);
+        $generator->decryptToken((string)$token);
+    }
+
     /**
      * @param $token
      * @dataProvider getInvalidTokens

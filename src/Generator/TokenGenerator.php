@@ -102,7 +102,7 @@ class TokenGenerator
             $builder->set('extra', serialize($extraData));
         }
 
-        return ($this->signer) ? $builder->sign($this->signer, $this->key)->getToken() : $builder->getToken();
+        return $this->signer ? $builder->sign($this->signer, $this->key)->getToken() : $builder->getToken();
     }
 
     /**
@@ -151,7 +151,11 @@ class TokenGenerator
             throw new InvalidTokenException('Invalid token', 400, $exception);
         }
 
-        if ($this->signer && !$token->verify($this->signer, $this->key)) {
+        try {
+            if ($this->signer && !$token->verify($this->signer, $this->key)) {
+                throw new InvalidTokenException('Invalid token');
+            }
+        } catch (\BadMethodCallException $exception) {
             throw new InvalidTokenException('Invalid token');
         }
 
