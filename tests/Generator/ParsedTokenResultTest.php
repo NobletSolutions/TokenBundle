@@ -1,16 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: gnat
- * Date: 31/07/17
- * Time: 12:27 PM
- */
 
 namespace NS\TokenBundle\Tests\Generator;
 
 use NS\TokenBundle\Generator\ParsedTokenResult;
+use PHPUnit\Framework\TestCase;
 
-class ParsedTokenResultTest extends \PHPUnit_Framework_TestCase
+class ParsedTokenResultTest extends TestCase
 {
     public function testGetAllExtra()
     {
@@ -32,6 +27,5 @@ class ParsedTokenResultTest extends \PHPUnit_Framework_TestCase
         $extra = ['something'=>'nothing'];
         $parsed = new ParsedTokenResult(1,'user@example.net',$extra);
         $this->assertEquals($extra, $parsed->getExtra('another'));
-
     }
 }

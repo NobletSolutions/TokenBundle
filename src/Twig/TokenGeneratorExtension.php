@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: gnat
- * Date: 06/06/16
- * Time: 11:01 AM.
- */
 namespace NS\TokenBundle\Twig;
 
 use NS\TokenBundle\Generator\LongTokenException;

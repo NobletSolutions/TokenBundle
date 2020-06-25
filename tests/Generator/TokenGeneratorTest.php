@@ -5,8 +5,9 @@ namespace NS\TokenBundle\Tests\Generator;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use NS\TokenBundle\Generator\InvalidTokenException;
 use NS\TokenBundle\Generator\TokenGenerator;
+use PHPUnit\Framework\TestCase;
 
-class TokenGeneratorTest extends \PHPUnit_Framework_TestCase
+class TokenGeneratorTest extends TestCase
 {
     public function testConstructor()
     {
@@ -29,8 +30,8 @@ class TokenGeneratorTest extends \PHPUnit_Framework_TestCase
         $this->assertGreaterThanOrEqual($time, $token->getClaim('nbf'));
         $parsed = $generator->decryptToken((string)$token);
 
-        $this->assertEquals($parsed->getId(), 2);
-        $this->assertEquals($parsed->getEmail(), 'test@example.com');
+        $this->assertEquals(2, $parsed->getId());
+        $this->assertEquals('test@example.com', $parsed->getEmail());
         $this->assertFalse($parsed->hasExtra());
         $this->assertNull($parsed->getExtra());
     }
@@ -47,8 +48,8 @@ class TokenGeneratorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('none', $token->getHeader('alg'));
         $parsed = $generator->decryptToken((string)$token);
 
-        $this->assertEquals($parsed->getId(), 2);
-        $this->assertEquals($parsed->getEmail(), 'test@example.com');
+        $this->assertEquals(2, $parsed->getId());
+        $this->assertEquals('test@example.com', $parsed->getEmail());
         $this->assertTrue($parsed->hasExtra());
         $this->assertEquals($params, $parsed->getExtra());
     }
@@ -68,8 +69,8 @@ class TokenGeneratorTest extends \PHPUnit_Framework_TestCase
 
         $parsed = $generator->decryptToken((string)$token);
 
-        $this->assertEquals($parsed->getId(), 2);
-        $this->assertEquals($parsed->getEmail(), 'test@example.com');
+        $this->assertEquals(2, $parsed->getId());
+        $this->assertEquals('test@example.com', $parsed->getEmail());
         $this->assertFalse($parsed->hasExtra());
         $this->assertNull($parsed->getExtra());
     }
@@ -88,8 +89,8 @@ class TokenGeneratorTest extends \PHPUnit_Framework_TestCase
         $this->assertGreaterThanOrEqual($time, $token->getClaim('nbf'));
         $parsed = $generator->decryptToken((string)$token);
 
-        $this->assertEquals($parsed->getId(), 2);
-        $this->assertEquals($parsed->getEmail(), 'test@example.com');
+        $this->assertEquals(2, $parsed->getId());
+        $this->assertEquals('test@example.com', $parsed->getEmail());
         $this->assertFalse($parsed->hasExtra());
         $this->assertNull($parsed->getExtra());
     }
@@ -141,8 +142,8 @@ class TokenGeneratorTest extends \PHPUnit_Framework_TestCase
     public function getInvalidTokens()
     {
         return [
-            ["something.totally.invalid"],
-            ["no dots"],
+            ['something.totally.invalid'],
+            ['no dots'],
         ];
     }
 }
