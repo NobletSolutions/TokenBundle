@@ -3,6 +3,7 @@ VERSION 1  INITIAL 1.0 RELEASE
 ==============================
 
    Version 1.0 - Initial 1.0 release
+      25/06/2020 12:19  1.0.9  Initial SF5 support
       11/12/2018 19:19  1.0.8  Handle unsigned tokens when we're expecting signed ones
       13/06/2018 14:44  1.0.7  Changed sf requires
       13/06/2018 10:43  1.0.6  SF4 supported
