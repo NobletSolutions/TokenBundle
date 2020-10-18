@@ -12,10 +12,10 @@ class Configuration implements ConfigurationInterface
     {
         // Instantiating a new TreeBuilder without a constructor arg is deprecated in SF4 and removed in SF5
         if (method_exists(TreeBuilder::class, '__construct')) {
-            $treeBuilder = new TreeBuilder('ns_file_upload');
+            $treeBuilder = new TreeBuilder('ns_token');
         } else { // Included for backward-compatibility with SF3
             $treeBuilder = new TreeBuilder();
-            $treeBuilder->root('ns_file_upload');
+            $treeBuilder->root('ns_token');
         }
 
         $treeBuilder
