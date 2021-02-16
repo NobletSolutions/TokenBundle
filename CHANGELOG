@@ -3,6 +3,7 @@ VERSION 1  INITIAL 1.0 RELEASE
 ==============================
 
    Version 1.0 - Initial 1.0 release
+      16/02/2021 21:35  1.0.13  Use InMemory Key holder instead of a string
       18/10/2020 01:17  1.0.12  Fixed config key
       17/10/2020 16:29  1.0.11  Allow twig 3.0
       25/06/2020 12:22  1.0.10  Removed deprecated twig functions/classes
