@@ -1,64 +1,40 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: gnat
- * Date: 31/07/17
- * Time: 12:14 PM
- */
 
 namespace NS\TokenBundle\Generator;
 
 class ParsedTokenResult
 {
-    /** @var string|integer */
-    private $id;
+    private int $id;
 
-    /** @var string */
-    private $email;
+    private string $email;
 
-    /** @var array */
-    private $extra = null;
+    private ?array $extra;
 
-    /**
-     * ParsedTokenResult constructor.
-     * @param int|string $id
-     * @param string $email
-     * @param array $extra
-     */
-    public function __construct($id, $email, array $extra = null)
+    public function __construct(int $id, string $email, array $extra = null)
     {
         $this->id = $id;
         $this->email = $email;
         $this->extra = $extra;
     }
 
-    /**
-     * @return int|string
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
-    public function getEmail()
+    public function getEmail(): string
     {
         return $this->email;
     }
 
-    /**
-     * @return bool
-     */
-    public function hasExtra()
+    public function hasExtra(): bool
     {
         return $this->extra !== null;
     }
 
     /**
-     * @param null $field
-     * @return array
+     * @param string|int|null $field
+     * @return mixed string|int|array
      */
     public function getExtra($field = null)
     {

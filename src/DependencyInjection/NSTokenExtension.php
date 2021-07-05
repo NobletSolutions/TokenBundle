@@ -7,16 +7,8 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 
-/**
- * This is the class that loads and manages your bundle configuration.
- *
- * @link http://symfony.com/doc/current/cookbook/bundles/extension.html
- */
 class NSTokenExtension extends Extension
 {
-    /**
-     * {@inheritdoc}
-     */
     public function load(array $configs, ContainerBuilder $container)
     {
         $configuration = new Configuration();
@@ -28,7 +20,7 @@ class NSTokenExtension extends Extension
         $container->setParameter('ns_token.signer', $config['signer']);
         $container->setParameter('ns_token.short_expiration', $config['short_expiration']);
         $container->setParameter('ns_token.long_expiration', $config['long_expiration']);
-        $container->setParameter('ns_token.audience', isset($config['audience']) ? $config['audience'] : null);
+        $container->setParameter('ns_token.audience', $config['audience'] ?? null);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');

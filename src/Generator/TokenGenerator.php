@@ -1,71 +1,41 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: gnat
- * Date: 27/01/17
- * Time: 3:45 PM
- */
 
 namespace NS\TokenBundle\Generator;
 
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
+use Lcobucci\JWT\Token;
 use Lcobucci\JWT\ValidationData;
+use Lcobucci\JWT\Signer\Key;
 
 class TokenGenerator
 {
-    /** @var string */
-    private $issuer;
+    private string $issuer;
+    private string $audience;
+    private int $expiration = 172800;
+    private string $id;
+    private Key $key;
+    private ?Signer $signer = null;
 
-    /** @var string */
-    private $audience;
-
-    /** @var int|null */
-    private $expiration = 172800;
-
-    /** @var string */
-    private $id;
-
-    /** @var string */
-    private $key;
-
-    /** @var Signer */
-    private $signer;
-
-    /**
-     * TokenGenerator constructor.
-     *
-     * @param string $id
-     * @param string $key
-     * @param string $issuer
-     * @param string|null $audience
-     * @param string|null $expiration
-     */
-    public function __construct($id, $key, $issuer, $audience = null, $expiration = null)
+    public function __construct(string $id, string $key, string $issuer, ?string $audience = null, ?int $expiration = null)
     {
         $this->id = $id;
-        $this->key = $key;
+        $this->key = new Key($key);
         $this->issuer = $issuer;
-        $this->audience = ($audience !== null) ? $audience : $this->issuer;
+        $this->audience = $audience ?? $this->issuer;
 
         if ($expiration) {
             $this->expiration = $expiration;
         }
     }
 
-    /**
-     * @param $expiration
-     */
-    public function setExpiration($expiration)
+    public function setExpiration(int $expiration): void
     {
         $this->expiration = $expiration;
     }
 
-    /**
-     * @param string $signer
-     */
-    public function setSigner($signer)
+    public function setSigner(string $signer): void
     {
         if (!class_exists($signer)) {
             throw new \InvalidArgumentException(sprintf('Signer class %s does not exist', $signer));
@@ -80,52 +50,36 @@ class TokenGenerator
         $this->signer = $signerObj;
     }
 
-    /**
-     * @param $uId
-     * @param $email
-     * @param array|null $extraData
-     *
-     * @return \Lcobucci\JWT\Token
-     */
-    public function getToken($uId, $email, array $extraData = null)
+    public function getToken(int $uId, string $email, array $extraData = null): Token
     {
         $builder = new Builder();
-        $builder->setIssuer($this->issuer)
-            ->setAudience($this->audience)
-            ->setId($this->id)
-            ->setNotBefore(time())
-            ->setExpiration(time() + $this->expiration)
-            ->set('userId', $uId)
-            ->set('email', $email);
+        $builder->issuedBy($this->issuer)
+            ->permittedFor($this->audience)
+            ->identifiedBy($this->id)
+            ->canOnlyBeUsedAfter(time())
+            ->expiresAt(time() + $this->expiration)
+            ->withClaim('userId', $uId)
+            ->withClaim('email', $email);
 
         if ($extraData) {
-            $builder->set('extra', serialize($extraData));
+            $builder->withClaim('extra', serialize($extraData));
         }
 
-        return $this->signer ? $builder->sign($this->signer, $this->key)->getToken() : $builder->getToken();
+        return $builder->getToken($this->signer, $this->key);
     }
 
     /**
-     * @param $tokenStr
-     *
-     * @return ParsedTokenResult
-     *
      * @throws InvalidTokenException
      */
-    public function decryptToken($tokenStr)
+    public function decryptToken($tokenStr): ParsedTokenResult
     {
         $token = $this->parseToken($tokenStr);
-        $extra = $token->hasClaim('extra') ? unserialize($token->getClaim('extra')) : null;
+        $extra = $token->hasClaim('extra') ? unserialize($token->getClaim('extra'), ['allowed_classes' => false]) : null;
 
         return new ParsedTokenResult($token->getClaim('userId'), $token->getClaim('email'), $extra);
     }
 
-    /**
-     * @param string $tokenStr
-     *
-     * @return bool
-     */
-    public function isValid($tokenStr)
+    public function isValid(string $tokenStr): bool
     {
         try {
             $this->parseToken($tokenStr);
@@ -137,13 +91,9 @@ class TokenGenerator
     }
 
     /**
-     * @param string $tokenStr
-     *
-     * @return \Lcobucci\JWT\Token
-     *
      * @throws InvalidTokenException
      */
-    private function parseToken($tokenStr)
+    private function parseToken(string $tokenStr): Token
     {
         try {
             $token = (new Parser())->parse($tokenStr);

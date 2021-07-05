@@ -10,31 +10,20 @@ use Twig\TwigFunction;
 
 class TokenGeneratorExtension extends AbstractExtension
 {
-    /** @var TokenGenerator */
-    private $generator;
+    private TokenGenerator $generator;
 
-    /** @var int */
-    private $short;
+    private int $short;
 
-    /** @var int */
-    private $long;
+    private int $long;
 
-    /**
-     * @param TokenGenerator $generator
-     * @param int $short
-     * @param int $long
-     */
-    public function __construct(TokenGenerator $generator, $short = 3600, $long = 2592000)
+    public function __construct(TokenGenerator $generator, int $short = 3600, int $long = 2592000)
     {
         $this->generator = $generator;
-        $this->short = $short;
-        $this->long = $long;
+        $this->short     = $short;
+        $this->long      = $long;
     }
 
-    /**
-     * @return array
-     */
-    public function getFunctions()
+    public function getFunctions(): array
     {
         return [
             new TwigFunction('generate_token', [$this, 'generateToken'], ['is_safe' => ['html']]),
@@ -43,40 +32,19 @@ class TokenGeneratorExtension extends AbstractExtension
         ];
     }
 
-    /**
-     * @param $id
-     * @param $email
-     * @param array|null $extraData
-     *
-     * @return Token
-     */
-    public function generateShortToken($id, $email, array $extraData = null)
+    public function generateShortToken(int $id, string $email, array $extraData = null): Token
     {
         $this->generator->setExpiration($this->short);
         return $this->generateToken($id, $email, $extraData);
     }
 
-    /**
-     * @param $id
-     * @param $email
-     * @param array|null $extraData
-     *
-     * @return Token
-     */
-    public function generateLongToken($id, $email, array $extraData = null)
+    public function generateLongToken(int $id, string $email, array $extraData = null): Token
     {
         $this->generator->setExpiration($this->long);
         return $this->generateToken($id, $email, $extraData);
     }
 
-    /**
-     * @param $id
-     * @param $email
-     * @param array|null $extraData
-     *
-     * @return Token
-     */
-    public function generateToken($id, $email, array $extraData = null)
+    public function generateToken(int $id, string $email, array $extraData = null): Token
     {
         $token = $this->generator->getToken($id, $email, $extraData);
         if (strlen($token) > 2000) {
@@ -84,13 +52,5 @@ class TokenGeneratorExtension extends AbstractExtension
         }
 
         return $token;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return 'ns_token.twig_extension';
     }
 }
