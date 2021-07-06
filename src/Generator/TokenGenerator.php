@@ -19,7 +19,7 @@ class TokenGenerator
     private Key $key;
     private ?Signer $signer = null;
 
-    public function __construct(string $id, string $signer, string $key, string $issuer, ?string $audience = null, ?int $expiration = null)
+    public function __construct(string $id, string $signer, $key, string $issuer, ?string $audience = null, ?int $expiration = null)
     {
         if (!class_exists($signer)) {
             throw new \InvalidArgumentException(sprintf('Signer class %s does not exist', $signer));
@@ -33,7 +33,7 @@ class TokenGenerator
 
         $this->signer   = $signerObj;
         $this->id       = $id;
-        $this->key      = new Key($key);
+        $this->key      = $key instanceof Key ? $key : new Key($key);
         $this->issuer   = $issuer;
         $this->audience = $audience ?? $this->issuer;
 
