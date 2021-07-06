@@ -2,6 +2,7 @@
 
 namespace NS\TokenBundle\Generator;
 
+use DateTimeImmutable;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
@@ -18,11 +19,22 @@ class TokenGenerator
     private Key $key;
     private ?Signer $signer = null;
 
-    public function __construct(string $id, string $key, string $issuer, ?string $audience = null, ?int $expiration = null)
+    public function __construct(string $id, string $signer, string $key, string $issuer, ?string $audience = null, ?int $expiration = null)
     {
-        $this->id = $id;
-        $this->key = new Key($key);
-        $this->issuer = $issuer;
+        if (!class_exists($signer)) {
+            throw new \InvalidArgumentException(sprintf('Signer class %s does not exist', $signer));
+        }
+
+        $signerObj = new $signer();
+
+        if (!$signerObj instanceof Signer) {
+            throw new \InvalidArgumentException(sprintf('Signer class %s does not implement Lcobucci\JWT\Signer Interface', $signer));
+        }
+
+        $this->signer   = $signerObj;
+        $this->id       = $id;
+        $this->key      = new Key($key);
+        $this->issuer   = $issuer;
         $this->audience = $audience ?? $this->issuer;
 
         if ($expiration) {
@@ -35,29 +47,14 @@ class TokenGenerator
         $this->expiration = $expiration;
     }
 
-    public function setSigner(string $signer): void
-    {
-        if (!class_exists($signer)) {
-            throw new \InvalidArgumentException(sprintf('Signer class %s does not exist', $signer));
-        }
-
-        $signerObj = new $signer();
-
-        if (!$signerObj instanceof Signer) {
-            throw new \InvalidArgumentException(sprintf('Signer class %s does not implement Lcobucci\JWT\Signer Interface', $signer));
-        }
-
-        $this->signer = $signerObj;
-    }
-
     public function getToken(int $uId, string $email, array $extraData = null): Token
     {
         $builder = new Builder();
         $builder->issuedBy($this->issuer)
             ->permittedFor($this->audience)
             ->identifiedBy($this->id)
-            ->canOnlyBeUsedAfter(time())
-            ->expiresAt(time() + $this->expiration)
+            ->canOnlyBeUsedAfter(new DateTimeImmutable())
+            ->expiresAt(new DateTimeImmutable('@' . (time() + $this->expiration)))
             ->withClaim('userId', $uId)
             ->withClaim('email', $email);
 

@@ -11,13 +11,13 @@ class TokenGeneratorTest extends TestCase
 {
     public function testConstructor(): void
     {
-        $generator = new TokenGenerator('id', 'key', 'issuer');
+        $generator = new TokenGenerator('id', Sha256::class, 'key', 'issuer');
         $this->assertInstanceOf(TokenGenerator::class, $generator);
     }
 
     public function testTokenExpirationTime(): void
     {
-        $generator = new TokenGenerator('id', 'key', 'issuer');
+        $generator = new TokenGenerator('id', Sha256::class, 'key', 'issuer');
         $generator->setExpiration(3600);
 
         $time = time();
@@ -25,7 +25,7 @@ class TokenGeneratorTest extends TestCase
 
         $this->assertEquals('issuer', $token->getClaim('iss'));
         $this->assertEquals('issuer', $token->getClaim('aud'));
-        $this->assertEquals('none', $token->getHeader('alg'));
+        $this->assertEquals('HS256', $token->getHeader('alg'));
         $this->assertGreaterThanOrEqual($time + 3600, $token->getClaim('exp'));
         $this->assertGreaterThanOrEqual($time, $token->getClaim('nbf'));
         $parsed = $generator->decryptToken((string)$token);
@@ -38,14 +38,14 @@ class TokenGeneratorTest extends TestCase
 
     public function testTokenExtraData(): void
     {
-        $generator = new TokenGenerator('id', 'key', 'issuer');
+        $generator = new TokenGenerator('id', Sha256::class, 'key', 'issuer');
 
         $params = ['something' => 'another', 'whatever' => 4];
         $token = $generator->getToken(2, 'test@example.com', $params);
 
         $this->assertEquals('issuer', $token->getClaim('iss'));
         $this->assertEquals('issuer', $token->getClaim('aud'));
-        $this->assertEquals('none', $token->getHeader('alg'));
+        $this->assertEquals('HS256', $token->getHeader('alg'));
         $parsed = $generator->decryptToken((string)$token);
 
         $this->assertEquals(2, $parsed->getId());
@@ -56,14 +56,14 @@ class TokenGeneratorTest extends TestCase
 
     public function testTokenWithNoAudience(): void
     {
-        $generator = new TokenGenerator('id', 'key', 'issuer');
+        $generator = new TokenGenerator('id', Sha256::class, 'key', 'issuer');
 
         $time = time();
         $token = $generator->getToken(2, 'test@example.com');
 
         $this->assertEquals('issuer', $token->getClaim('iss'));
         $this->assertEquals('issuer', $token->getClaim('aud'));
-        $this->assertEquals('none', $token->getHeader('alg'));
+        $this->assertEquals('HS256', $token->getHeader('alg'));
         $this->assertGreaterThanOrEqual($time + 172800, $token->getClaim('exp'));
         $this->assertGreaterThanOrEqual($time, $token->getClaim('nbf'));
 
@@ -77,14 +77,14 @@ class TokenGeneratorTest extends TestCase
 
     public function testTokenWithAudience(): void
     {
-        $generator = new TokenGenerator('id', 'key', 'issuer', 'audience');
+        $generator = new TokenGenerator('id', Sha256::class, 'key', 'issuer', 'audience');
 
         $time = time();
         $token = $generator->getToken(2, 'test@example.com');
 
         $this->assertEquals('issuer', $token->getClaim('iss'));
         $this->assertEquals('audience', $token->getClaim('aud'));
-        $this->assertEquals('none', $token->getHeader('alg'));
+        $this->assertEquals('HS256', $token->getHeader('alg'));
         $this->assertGreaterThanOrEqual($time + 172800, $token->getClaim('exp'));
         $this->assertGreaterThanOrEqual($time, $token->getClaim('nbf'));
         $parsed = $generator->decryptToken((string)$token);
@@ -97,8 +97,7 @@ class TokenGeneratorTest extends TestCase
 
     public function testTokenWithSigner(): void
     {
-        $generator = new TokenGenerator('id', 'key', 'issuer', 'audience');
-        $generator->setSigner(Sha256::class);
+        $generator = new TokenGenerator('id', Sha256::class, 'key', 'issuer', 'audience');
 
         $time = time();
         $token = $generator->getToken(2, 'test@example.com');
@@ -117,19 +116,9 @@ class TokenGeneratorTest extends TestCase
         $this->assertNull($parsed->getExtra());
     }
 
-    public function testGeneratorWithSignerButUnsignedToken(): void
-    {
-        $this->expectException(InvalidTokenException::class);
-        $generator = new TokenGenerator('id', 'key', 'issuer', 'audience');
-
-        $token = $generator->getToken(2, 'test@example.com');
-        $generator->setSigner(Sha256::class);
-        $generator->decryptToken((string)$token);
-    }
-
     public function testNotAllowedSerializedObjects(): void
     {
-        $generator = new TokenGenerator('id', 'key', 'issuer', 'audience');
+        $generator = new TokenGenerator('id', Sha256::class, 'key', 'issuer', 'audience');
 
         $time = time();
         $stdClass = new \stdClass();
@@ -149,7 +138,7 @@ class TokenGeneratorTest extends TestCase
     {
         $this->expectException(InvalidTokenException::class);
 
-        $generator = new TokenGenerator('id', 'key', 'issuer', 'audience');
+        $generator = new TokenGenerator('id', Sha256::class, 'key', 'issuer', 'audience');
         $generator->decryptToken($token);
     }
 

@@ -1,10 +1,8 @@
 services:
   NS\TokenBundle\Generator\TokenGenerator:
-    arguments: [ '%ns_token.id%', '@ns_token.key', '%ns_token.issuer%', '%ns_token.audience%' ]
+    arguments: [ '%ns_token.id%', '%ns_token.signer%', '@ns_token.key', '%ns_token.issuer%', '%ns_token.audience%' ]
     shared: false
     public: false
-    calls:
-      - [ setSigner, [ '%ns_token.signer%'] ]
 
   NS\TokenBundle\Twig\TokenGeneratorExtension:
     arguments: [ '@NS\TokenBundle\Generator\TokenGenerator', '%ns_token.short_expiration%', '%ns_token.long_expiration%' ]
