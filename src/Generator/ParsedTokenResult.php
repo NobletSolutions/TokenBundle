@@ -4,20 +4,20 @@ namespace NS\TokenBundle\Generator;
 
 class ParsedTokenResult
 {
-    private int $id;
+    private string $id;
 
     private string $email;
 
     private ?array $extra;
 
-    public function __construct(int $id, string $email, array $extra = null)
+    public function __construct(string $id, string $email, array $extra = null)
     {
         $this->id = $id;
         $this->email = $email;
         $this->extra = $extra;
     }
 
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
     }
