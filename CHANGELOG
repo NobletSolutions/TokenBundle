@@ -3,6 +3,7 @@ VERSION 2  UPDATED PHP VERSION TO 7.4, ADDED TYPEHINTS
 ======================================================
 
    Version 2.0 - Updated PHP version to 7.4, added typehints
+      20/07/2021 16:43  2.0.3  Token id can/should be a string
       06/07/2021 18:38  2.0.2  Allow the key to be an object or string
       06/07/2021 18:34  2.0.1  Fixed allowing jwt 3.4
       05/07/2021 22:55  2.0.0  initial release
