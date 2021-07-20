@@ -21,7 +21,7 @@ class TokenGeneratorTest extends TestCase
         $generator->setExpiration(3600);
 
         $time = time();
-        $token = $generator->getToken(2, 'test@example.com');
+        $token = $generator->getToken('2', 'test@example.com');
 
         $this->assertEquals('issuer', $token->getClaim('iss'));
         $this->assertEquals('issuer', $token->getClaim('aud'));
@@ -41,7 +41,7 @@ class TokenGeneratorTest extends TestCase
         $generator = new TokenGenerator('id', Sha256::class, 'key', 'issuer');
 
         $params = ['something' => 'another', 'whatever' => 4];
-        $token = $generator->getToken(2, 'test@example.com', $params);
+        $token = $generator->getToken('2', 'test@example.com', $params);
 
         $this->assertEquals('issuer', $token->getClaim('iss'));
         $this->assertEquals('issuer', $token->getClaim('aud'));
@@ -59,7 +59,7 @@ class TokenGeneratorTest extends TestCase
         $generator = new TokenGenerator('id', Sha256::class, 'key', 'issuer');
 
         $time = time();
-        $token = $generator->getToken(2, 'test@example.com');
+        $token = $generator->getToken('2', 'test@example.com');
 
         $this->assertEquals('issuer', $token->getClaim('iss'));
         $this->assertEquals('issuer', $token->getClaim('aud'));
@@ -80,7 +80,7 @@ class TokenGeneratorTest extends TestCase
         $generator = new TokenGenerator('id', Sha256::class, 'key', 'issuer', 'audience');
 
         $time = time();
-        $token = $generator->getToken(2, 'test@example.com');
+        $token = $generator->getToken('2', 'test@example.com');
 
         $this->assertEquals('issuer', $token->getClaim('iss'));
         $this->assertEquals('audience', $token->getClaim('aud'));
@@ -100,7 +100,7 @@ class TokenGeneratorTest extends TestCase
         $generator = new TokenGenerator('id', Sha256::class, 'key', 'issuer', 'audience');
 
         $time = time();
-        $token = $generator->getToken(2, 'test@example.com');
+        $token = $generator->getToken('2', 'test@example.com');
 
         $this->assertEquals('issuer', $token->getClaim('iss'));
         $this->assertEquals('audience', $token->getClaim('aud'));
@@ -123,7 +123,7 @@ class TokenGeneratorTest extends TestCase
         $time = time();
         $stdClass = new \stdClass();
         $stdClass->prop = 'something';
-        $token = $generator->getToken(2, 'test@example.com', ['hash' => 'blah blah blah', 'stdClass' => $stdClass]);
+        $token = $generator->getToken('2', 'test@example.com', ['hash' => 'blah blah blah', 'stdClass' => $stdClass]);
         $decrypted = $generator->decryptToken((string)$token);
         $extra = $decrypted->getExtra();
         self::assertArrayHasKey('stdClass', $extra);

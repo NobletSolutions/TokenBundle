@@ -47,7 +47,7 @@ class TokenGenerator
         $this->expiration = $expiration;
     }
 
-    public function getToken(int $uId, string $email, array $extraData = null): Token
+    public function getToken(string $uId, string $email, array $extraData = null): Token
     {
         $builder = new Builder();
         $builder->issuedBy($this->issuer)
