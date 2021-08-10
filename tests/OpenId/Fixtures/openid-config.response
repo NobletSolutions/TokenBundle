@@ -1,0 +1,7 @@
+{"issuer":"https://example.net/","token_endpoint":"https://example.net/token","jwks_uri":"https://example.net/.well-known/jwks",
+"grant_types_supported":["refresh_token","client_credentials","password"],
+"scopes_supported":["openid"],
+"claims_supported":["aud","exp","iat","iss","jti","sub"],
+"id_token_signing_alg_values_supported":["RS256"],
+"subject_types_supported":["public"],
+"token_endpoint_auth_methods_supported":["client_secret_basic","client_secret_post"]}

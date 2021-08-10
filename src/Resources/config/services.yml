@@ -21,3 +21,24 @@ services:
   ns_token.key:
     class: Lcobucci\JWT\Signer\Key
     arguments: ['%ns_token.key%']
+
+  ns_token.jwt_parser:
+    class: Lcobucci\JWT\Parser
+    public: false
+
+  ns_token.jwt_validator:
+    class: Lcobucci\JWT\Validation\Validator
+    public: false
+
+  ns_tokwn.jwk_pem_converter:
+    class: CoderCat\JWKToPEM\JWKConverter
+    public: false
+
+  ns_token.http_client:
+    class: Symfony\Component\HttpClient\HttpClient
+    factory: ['Symfony\Component\HttpClient\HttpClient', 'create']
+    public: false
+
+  NS\TokenBundle\OpenId\TokenVerifier:
+    arguments: ['@ns_token.http_client','@ns_token.jwt_parser', '@ns_token.jwt_validator', '@ns_tokwn.jwk_pem_converter', '@logger']
+    public: false
