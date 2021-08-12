@@ -1,4 +1,10 @@
 
+VERSION 3  INITIAL OPENID TOKEN VERIFIER
+========================================
+
+   Version 3.0 - Initial OpenId Token Verifier
+      12/08/2021 20:35  3.0.0  initial release
+
 VERSION 2  UPDATED PHP VERSION TO 7.4, ADDED TYPEHINTS
 ======================================================
 
