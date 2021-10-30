@@ -2,6 +2,8 @@
 
 namespace NS\TokenBundle\DependencyInjection;
 
+use Lcobucci\JWT\Signer\Key;
+use NS\TokenBundle\Generator\TokenGenerator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
@@ -15,7 +17,6 @@ class NSTokenExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $container->setParameter('ns_token.id', $config['id']);
-        $container->setParameter('ns_token.key', $config['key']);
         $container->setParameter('ns_token.issuer', $config['issuer']);
         $container->setParameter('ns_token.signer', $config['signer']);
         $container->setParameter('ns_token.short_expiration', $config['short_expiration']);
@@ -24,5 +25,13 @@ class NSTokenExtension extends Extension
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');
+
+        $keyService = $container->register('ns_token.key')
+            ->setClass(Key::class)
+            ->setPublic(false)
+            ->setArguments([$config['key']]);
+
+        $def = $container->getDefinition(TokenGenerator::class);
+        $def->setArgument(2, $keyService);
     }
 }
