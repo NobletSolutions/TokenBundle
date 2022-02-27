@@ -1,42 +1,31 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace NS\TokenBundle\Generator;
 
+use BadMethodCallException;
 use DateTimeImmutable;
-use Lcobucci\JWT\Builder;
-use Lcobucci\JWT\Parser;
-use Lcobucci\JWT\Signer;
+use Exception;
+use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Token;
-use Lcobucci\JWT\ValidationData;
-use Lcobucci\JWT\Signer\Key;
+use Lcobucci\JWT\Validation\Constraint\IdentifiedBy;
+use Lcobucci\JWT\Validation\Constraint\IssuedBy;
+use Lcobucci\JWT\Validation\Constraint\PermittedFor;
+use Lcobucci\JWT\Validation\Constraint\SignedWith;
 
 class TokenGenerator
 {
+    private Configuration $jwtConfig;
+    private string $id;
     private string $issuer;
     private string $audience;
     private int $expiration = 172800;
-    private string $id;
-    private Key $key;
-    private ?Signer $signer = null;
 
-    public function __construct(string $id, string $signer, $key, string $issuer, ?string $audience = null, ?int $expiration = null)
+    public function __construct(Configuration $jwtConfig, string $id, string $issuer, ?string $audience = null, ?int $expiration = null)
     {
-        if (!class_exists($signer)) {
-            throw new \InvalidArgumentException(sprintf('Signer class %s does not exist', $signer));
-        }
-
-        $signerObj = new $signer();
-
-        if (!$signerObj instanceof Signer) {
-            throw new \InvalidArgumentException(sprintf('Signer class %s does not implement Lcobucci\JWT\Signer Interface', $signer));
-        }
-
-        $this->signer   = $signerObj;
-        $this->id       = $id;
-        $this->key      = $key instanceof Key ? $key : new Key($key);
-        $this->issuer   = $issuer;
-        $this->audience = $audience ?? $this->issuer;
-
+        $this->jwtConfig = $jwtConfig;
+        $this->id        = $id;
+        $this->issuer    = $issuer;
+        $this->audience  = $audience ?? $this->issuer;
         if ($expiration) {
             $this->expiration = $expiration;
         }
@@ -47,14 +36,15 @@ class TokenGenerator
         $this->expiration = $expiration;
     }
 
-    public function getToken(string $uId, string $email, array $extraData = null): Token
+    public function getToken(string $uId, string $email, array $extraData = null, ?int $expiration = null, ?string $keyId = null): Token
     {
-        $builder = new Builder();
-        $builder->issuedBy($this->issuer)
+        $builder = $this->jwtConfig
+            ->builder()
+            ->issuedBy($this->issuer)
             ->permittedFor($this->audience)
             ->identifiedBy($this->id)
             ->canOnlyBeUsedAfter(new DateTimeImmutable())
-            ->expiresAt(new DateTimeImmutable('@' . (time() + $this->expiration)))
+            ->expiresAt(new DateTimeImmutable('@' . (time() + ($expiration > 0 ? $expiration : $this->expiration))))
             ->withClaim('userId', $uId)
             ->withClaim('email', $email);
 
@@ -62,7 +52,11 @@ class TokenGenerator
             $builder->withClaim('extra', serialize($extraData));
         }
 
-        return $builder->getToken($this->signer, $this->key);
+        if ($keyId) {
+            $builder->withHeader('kid', $keyId);
+        }
+
+        return $builder->getToken($this->jwtConfig->signer(), $this->jwtConfig->signingKey());
     }
 
     /**
@@ -70,10 +64,11 @@ class TokenGenerator
      */
     public function decryptToken($tokenStr): ParsedTokenResult
     {
-        $token = $this->parseToken($tokenStr);
-        $extra = $token->hasClaim('extra') ? unserialize($token->getClaim('extra'), ['allowed_classes' => false]) : null;
+        $token  = $this->parseToken($tokenStr);
+        $claims = $token->claims();
+        $extra  = $claims->has('extra') ? unserialize($claims->get('extra'), ['allowed_classes' => false]) : null;
 
-        return new ParsedTokenResult($token->getClaim('userId'), $token->getClaim('email'), $extra);
+        return new ParsedTokenResult($claims->get('userId'), $claims->get('email'), $extra);
     }
 
     public function isValid(string $tokenStr): bool
@@ -92,26 +87,23 @@ class TokenGenerator
      */
     private function parseToken(string $tokenStr): Token
     {
+        $constraints = [];
         try {
-            $token = (new Parser())->parse($tokenStr);
-        } catch (\Exception $exception) {
+            $token = $this->jwtConfig->parser()->parse($tokenStr);
+        } catch (Exception $exception) {
             throw new InvalidTokenException('Invalid token', 400, $exception);
         }
 
+        $constraints[] = new IssuedBy($this->issuer);
+        $constraints[] = new PermittedFor($this->audience);
+        $constraints[] = new IdentifiedBy($this->id);
+        $constraints[] = new SignedWith($this->jwtConfig->signer(), $this->jwtConfig->verificationKey());
+
         try {
-            if ($this->signer && !$token->verify($this->signer, $this->key)) {
+            if (!$this->jwtConfig->validator()->validate($token, ...$constraints)) {
                 throw new InvalidTokenException('Invalid token');
             }
-        } catch (\BadMethodCallException $exception) {
-            throw new InvalidTokenException('Invalid token');
-        }
-
-        $data = new ValidationData();
-        $data->setId($this->id);
-        $data->setIssuer($this->issuer);
-        $data->setAudience($this->audience);
-
-        if (!$token->validate($data)) {
+        } catch (BadMethodCallException $exception) {
             throw new InvalidTokenException('Invalid token');
         }
 

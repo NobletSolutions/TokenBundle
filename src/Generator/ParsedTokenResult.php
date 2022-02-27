@@ -1,18 +1,16 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace NS\TokenBundle\Generator;
 
 class ParsedTokenResult
 {
     private string $id;
-
     private string $email;
+    private ?array $extra = null;
 
-    private ?array $extra;
-
-    public function __construct(string $id, string $email, array $extra = null)
+    public function __construct(string $id, string $email, ?array $extra = null)
     {
-        $this->id = $id;
+        $this->id    = $id;
         $this->email = $email;
         $this->extra = $extra;
     }
@@ -34,6 +32,7 @@ class ParsedTokenResult
 
     /**
      * @param string|int|null $field
+     *
      * @return mixed string|int|array
      */
     public function getExtra($field = null)

@@ -11,9 +11,7 @@ use Twig\TwigFunction;
 class TokenGeneratorExtension extends AbstractExtension
 {
     private TokenGenerator $generator;
-
     private int $short;
-
     private int $long;
 
     public function __construct(TokenGenerator $generator, int $short = 3600, int $long = 2592000)
@@ -34,20 +32,19 @@ class TokenGeneratorExtension extends AbstractExtension
 
     public function generateShortToken(int $id, string $email, array $extraData = null): Token
     {
-        $this->generator->setExpiration($this->short);
-        return $this->generateToken($id, $email, $extraData);
+        return $this->generateToken($id, $email, $this->short, $extraData);
     }
 
     public function generateLongToken(int $id, string $email, array $extraData = null): Token
     {
-        $this->generator->setExpiration($this->long);
-        return $this->generateToken($id, $email, $extraData);
+        return $this->generateToken($id, $email, $this->long, $extraData);
     }
 
-    public function generateToken(int $id, string $email, array $extraData = null): Token
+    public function generateToken(int $id, string $email, int $expiration, array $extraData = null): Token
     {
-        $token = $this->generator->getToken($id, $email, $extraData);
-        if (strlen($token) > 2000) {
+        $token    = $this->generator->getToken($id, $email, $extraData, $expiration);
+        $tokenStr = $token->toString();
+        if (strlen($tokenStr) > 2000) {
             throw new LongTokenException();
         }
 

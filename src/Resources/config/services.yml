@@ -1,25 +1,21 @@
 services:
-  NS\TokenBundle\Generator\TokenGenerator:
-    arguments: [ '%ns_token.id%', '%ns_token.signer%', '@ns_token.key', '%ns_token.issuer%', '%ns_token.audience%' ]
-    shared: false
-    public: false
-
   NS\TokenBundle\Twig\TokenGeneratorExtension:
-    arguments: [ '@NS\TokenBundle\Generator\TokenGenerator', '%ns_token.short_expiration%', '%ns_token.long_expiration%' ]
+    arguments: [ '@ns_token.generator', '%ns_token.short_expiration%', '%ns_token.long_expiration%' ]
     public: false
     tags:
       - { name: twig.extension }
-
-  ns_token.generator:
-    alias: NS\TokenBundle\Generator\TokenGenerator
-    public: true
 
   ns_token.twig_extension:
     alias: NS\TokenBundle\Twig\TokenGeneratorExtension
     public: true
 
   ns_token.jwt_parser:
-    class: Lcobucci\JWT\Parser
+    class: Lcobucci\JWT\Token\Parser
+    arguments: ['@ns_token.jwt_jose_encoder']
+    public: false
+
+  ns_token.jwt_jose_encoder:
+    class: Lcobucci\JWT\Encoding\JoseEncoder
     public: false
 
   ns_token.jwt_validator:

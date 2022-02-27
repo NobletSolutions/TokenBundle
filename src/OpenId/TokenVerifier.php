@@ -3,14 +3,15 @@
 namespace NS\TokenBundle\OpenId;
 
 use CoderCat\JWKToPEM\JWKConverter;
+use DateTimeZone;
 use Exception;
 use InvalidArgumentException;
 use Lcobucci\Clock\SystemClock;
-use Lcobucci\JWT\Parser;
+use Lcobucci\JWT\Token\Parser;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Validation\Constraint\IssuedBy;
+use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
-use Lcobucci\JWT\Validation\Constraint\ValidAt;
 use Lcobucci\JWT\Validation\Validator;
 use NS\TokenBundle\Generator\InvalidTokenException;
 use Psr\Log\LoggerInterface;
@@ -19,18 +20,18 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class TokenVerifier
 {
-    private Parser $parser;
-    private JWKConverter $tokenConverter;
-    private Validator $validator;
     private HttpClientInterface $httpClient;
+    private Parser $parser;
+    private Validator $validator;
+    private JWKConverter $tokenConverter;
     private LoggerInterface $logger;
 
     public function __construct(HttpClientInterface $httpClient, Parser $parser, Validator $validator, JWKConverter $tokenConverter, LoggerInterface $logger)
     {
         $this->httpClient     = $httpClient;
         $this->parser         = $parser;
-        $this->tokenConverter = $tokenConverter;
         $this->validator      = $validator;
+        $this->tokenConverter = $tokenConverter;
         $this->logger         = $logger;
     }
 
@@ -45,7 +46,7 @@ class TokenVerifier
 
         try {
             $token       = $this->parser->parse($tokenStr);
-            $constraints = [new IssuedBy($allowableIssuer), new ValidAt(new SystemClock(new \DateTimeZone('America/Edmonton')))];
+            $constraints = [new IssuedBy($allowableIssuer), new LooseValidAt(new SystemClock(new DateTimeZone('America/Edmonton')))];
 
             $openIdConfigUrl = sprintf('%s/.well-known/openid-configuration', $allowableIssuer);
             $config          = $this->get($openIdConfigUrl);
@@ -75,14 +76,15 @@ class TokenVerifier
             $found = false;
             $keyId = $token->headers()->get('kid');
             foreach ($jwksConfig['keys'] as $key) {
-                if ($keyId === $key['kid']) {
+                if (isset($key['kid']) && $keyId === $key['kid']) {
                     $signer = SignerLocator::getSigner($key['alg']);
                     if (!$signer) {
                         $this->logger->debug('TokenVerifier: Unable to locate appropriate signer');
                         throw new RuntimeException('Unable to locate appropriate signer');
                     }
                     $PEM           = $this->tokenConverter->toPEM($key);
-                    $constraints[] = new SignedWith($signer, new InMemory($PEM));
+                    file_put_contents('/tmp/converted.pem', $PEM);
+                    $constraints[] = new SignedWith($signer, InMemory::plainText($PEM));
                     $found         = true;
                     break;
                 }
@@ -102,12 +104,9 @@ class TokenVerifier
             }
 
             return true;
-        } catch (Exception $exception) {
-            $this->logger->debug('TokenVerifier: Invalid Token1: ' . $exception->getMessage());
-            throw new InvalidTokenException('Invalid token');
-        } catch (\Throwable $throwable) {
-            $this->logger->debug('TokenVerifier: Invalid Token2: ' . $throwable->getMessage());
-            throw new InvalidTokenException('Invalid token');
+        } catch (Exception|\Throwable $exception) {
+            $this->logger->debug('TokenVerifier: Invalid Token: ' . $exception->getMessage());
+            throw new InvalidTokenException('Invalid token', 107, $exception);
         }
     }
 
