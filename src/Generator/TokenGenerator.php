@@ -58,6 +58,8 @@ class TokenGenerator
             ->withClaim('userId', $uId)
             ->withClaim('email', $email);
 
+        $builder->withClaim('iat', new DateTimeImmutable('@' . time()));
+
         if ($extraData) {
             $builder->withClaim('extra', serialize($extraData));
         }

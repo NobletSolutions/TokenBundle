@@ -14,7 +14,8 @@
         "php":                      ">=7.4",
         "symfony/framework-bundle": "^4.0|^5.0",
         "twig/twig":                "^2.0|^3.0",
-        "lcobucci/jwt":             "^3.2"
+        "lcobucci/jwt":             "^3.2",
+        "liip/rmt": "^1.7"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.0|^7.0"
@@ -26,4 +27,3 @@
 	"psr-4": { "NS\\TokenBundle\\Tests\\": "tests" }
     }
 }
-
