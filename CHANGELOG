@@ -3,6 +3,7 @@ VERSION 4  UPDATED TOKEN HANDLING / IMPROVED CONFIGURATION / SUPPORT SF 6
 =========================================================================
 
    Version 4.0 - Updated token handling / improved configuration / support SF 6
+      29/09/2022 18:38  4.0.1  Added IssuedAt claim by default
       28/09/2022 22:58  4.0.0  initial release
 
 VERSION 3  INITIAL OPENID TOKEN VERIFIER
