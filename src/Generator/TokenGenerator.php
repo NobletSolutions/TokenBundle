@@ -43,6 +43,7 @@ class TokenGenerator
             ->issuedBy($this->issuer)
             ->permittedFor($this->audience)
             ->identifiedBy($this->id)
+            ->issuedAt(new DateTimeImmutable())
             ->canOnlyBeUsedAfter(new DateTimeImmutable())
             ->expiresAt(new DateTimeImmutable('@' . (time() + ($expiration > 0 ? $expiration : $this->expiration))))
             ->withClaim('userId', $uId)
