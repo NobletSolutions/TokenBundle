@@ -30,14 +30,14 @@ class TokenGeneratorExtension extends AbstractExtension
         ];
     }
 
-    public function generateShortToken(int $id, string $email, array $extraData = null): Token
+    public function generateShortToken(int $id, string $email, array $extraData = null): string
     {
-        return $this->generateToken($id, $email, $this->short, $extraData);
+        return $this->generateToken($id, $email, $this->short, $extraData)->toString();
     }
 
-    public function generateLongToken(int $id, string $email, array $extraData = null): Token
+    public function generateLongToken(int $id, string $email, array $extraData = null): string
     {
-        return $this->generateToken($id, $email, $this->long, $extraData);
+        return $this->generateToken($id, $email, $this->long, $extraData)->toString();
     }
 
     public function generateToken(int $id, string $email, int $expiration, array $extraData = null): Token
