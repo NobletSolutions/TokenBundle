@@ -3,6 +3,7 @@ VERSION 4  UPDATED TOKEN HANDLING / IMPROVED CONFIGURATION / SUPPORT SF 6
 =========================================================================
 
    Version 4.0 - Updated token handling / improved configuration / support SF 6
+      01/05/2024 13:54  4.0.3  Allow PHP 8.X
       08/10/2022 00:11  4.0.2  Fixed the twig extension return value
       29/09/2022 18:38  4.0.1  Added IssuedAt claim by default
       28/09/2022 22:58  4.0.0  initial release
