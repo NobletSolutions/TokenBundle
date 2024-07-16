@@ -83,7 +83,6 @@ class TokenVerifier
                         throw new RuntimeException('Unable to locate appropriate signer');
                     }
                     $PEM           = $this->tokenConverter->toPEM($key);
-                    file_put_contents('/tmp/converted.pem', $PEM);
                     $constraints[] = new SignedWith($signer, InMemory::plainText($PEM));
                     $found         = true;
                     break;
