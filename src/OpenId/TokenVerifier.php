@@ -112,8 +112,7 @@ class TokenVerifier
     private function get(string $url): ?string
     {
         try {
-            $response = $this->httpClient->request('GET', $url);
-            return $response->getContent();
+            return $this->httpClient->request('GET', $url)->getContent();
         } catch (Exception $exception) {
             return null;
         }

@@ -30,12 +30,7 @@ class ParsedTokenResult
         return $this->extra !== null;
     }
 
-    /**
-     * @param string|int|null $field
-     *
-     * @return mixed string|int|array
-     */
-    public function getExtra($field = null)
+    public function getExtra(string|int|null $field = null): null|string|int|array
     {
         if ($field !== null) {
             if (isset($this->extra[$field])) {

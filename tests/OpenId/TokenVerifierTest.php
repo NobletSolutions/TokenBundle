@@ -6,7 +6,7 @@ use CoderCat\JWKToPEM\JWKConverter;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Encoding\JoseEncoder;
 use Lcobucci\JWT\Signer\Key\InMemory;
-use Lcobucci\JWT\Signer\Rsa\UnsafeSha256;
+use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\Token\Parser;
 use Lcobucci\JWT\Validation\Validator;
 use NS\TokenBundle\Generator\InvalidTokenException;
@@ -21,24 +21,18 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class TokenVerifierTest extends TestCase
 {
-    private Parser $parser;
-    private JWKConverter $tokenConverter;
-    private Validator $validator;
-    /** @var HttpClientInterface|MockObject */
-    private $httpClient;
+    private HttpClientInterface|MockObject $httpClient;
 
-    /** @var LoggerInterface|MockObject */
-    private $logger;
     private ?TokenVerifier $tokenVerifier = null;
 
     public function setUp(): void
     {
-        $this->parser         = new Parser(new JoseEncoder());
-        $this->tokenConverter = new JWKConverter();
-        $this->validator      = new Validator();
-        $this->httpClient     = $this->createMock(HttpClientInterface::class);
-        $this->logger         = $this->createMock(LoggerInterface::class);
-        $this->tokenVerifier  = new TokenVerifier($this->httpClient, $this->parser, $this->validator, $this->tokenConverter, $this->logger);
+        $parser              = new Parser(new JoseEncoder());
+        $tokenConverter      = new JWKConverter();
+        $validator           = new Validator();
+        $this->httpClient    = $this->createMock(HttpClientInterface::class);
+        $logger              = $this->createMock(LoggerInterface::class);
+        $this->tokenVerifier = new TokenVerifier($this->httpClient, $parser, $validator, $tokenConverter, $logger);
     }
 
     public function testNonUrlIssuerThrowsException(): void
@@ -122,7 +116,7 @@ class TokenVerifierTest extends TestCase
             throw new \RuntimeException("Looking for $url");
         });
 
-	$jwtConfig = Configuration::forAsymmetricSigner(new UnsafeSha256(), InMemory::file(__DIR__.'/Fixtures/rsa-2048.private'), InMemory::file(__DIR__.'/Fixtures/rsa-2048.public'));
+	$jwtConfig = Configuration::forAsymmetricSigner(new Sha256(), InMemory::file(__DIR__.'/Fixtures/rsa-2048.private'), InMemory::file(__DIR__.'/Fixtures/rsa-2048.public'));
         $generator = new TokenGenerator($jwtConfig, 'id', 'https://example.net');
         $token = $generator->getToken('1', 'user@example.net', null, null, 'D44C4DD0CFD0A76F5748AD8F541B07A536895CCD');
 

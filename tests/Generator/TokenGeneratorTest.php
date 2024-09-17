@@ -67,6 +67,7 @@ class TokenGeneratorTest extends TestCase
         $this->assertNull($parsed->getExtra());
     }
 
+    /** @group extra */
     public function testTokenExtraData(): void
     {
         $generator = new TokenGenerator($this->jwtConfig, 'id', 'issuer');
@@ -147,7 +148,6 @@ class TokenGeneratorTest extends TestCase
     public function testNotAllowedSerializedObjects(): void
     {
         $generator      = new TokenGenerator($this->jwtConfig, 'id', 'issuer', 'audience');
-        $time           = time();
         $stdClass       = new \stdClass();
         $stdClass->prop = 'something';
         $token          = $generator->getToken('2', 'test@example.com', ['hash' => 'blah blah blah', 'stdClass' => $stdClass]);

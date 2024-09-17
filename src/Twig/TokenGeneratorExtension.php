@@ -24,9 +24,9 @@ class TokenGeneratorExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('generate_token', [$this, 'generateToken'], ['is_safe' => ['html']]),
-            new TwigFunction('generate_short_token', [$this, 'generateShortToken'], ['is_safe' => ['html']]),
-            new TwigFunction('generate_long_token', [$this, 'generateLongToken'], ['is_safe' => ['html']]),
+            new TwigFunction('generate_token', $this->generateToken(...), ['is_safe' => ['html']]),
+            new TwigFunction('generate_short_token', $this->generateShortToken(...), ['is_safe' => ['html']]),
+            new TwigFunction('generate_long_token', $this->generateLongToken(...), ['is_safe' => ['html']]),
         ];
     }
 

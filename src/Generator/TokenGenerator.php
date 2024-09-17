@@ -38,23 +38,24 @@ class TokenGenerator
 
     public function getToken(string $uId, string $email, array $extraData = null, ?int $expiration = null, ?string $keyId = null): Token
     {
+        $now = new DateTimeImmutable();
         $builder = $this->jwtConfig
             ->builder()
             ->issuedBy($this->issuer)
             ->permittedFor($this->audience)
             ->identifiedBy($this->id)
-            ->issuedAt(new DateTimeImmutable())
-            ->canOnlyBeUsedAfter(new DateTimeImmutable())
+            ->issuedAt($now)
+            ->canOnlyBeUsedAfter($now)
             ->expiresAt(new DateTimeImmutable('@' . (time() + ($expiration > 0 ? $expiration : $this->expiration))))
             ->withClaim('userId', $uId)
             ->withClaim('email', $email);
 
-        if ($extraData) {
-            $builder->withClaim('extra', serialize($extraData));
+        if ($extraData !== null) {
+            $builder = $builder->withClaim('extra', serialize($extraData));
         }
 
         if ($keyId) {
-            $builder->withHeader('kid', $keyId);
+            $builder = $builder->withHeader('kid', $keyId);
         }
 
         return $builder->getToken($this->jwtConfig->signer(), $this->jwtConfig->signingKey());
