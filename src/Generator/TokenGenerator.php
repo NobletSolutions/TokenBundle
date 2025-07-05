@@ -70,7 +70,7 @@ class TokenGenerator
         $claims = $token->claims();
         $extra  = $claims->has('extra') ? unserialize($claims->get('extra'), ['allowed_classes' => false]) : null;
 
-        return new ParsedTokenResult($claims->get('userId'), $claims->get('email'), $extra);
+        return new ParsedTokenResult((string)$claims->get('userId'), $claims->get('email',''), $extra);
     }
 
     public function isValid(string $tokenStr): bool
