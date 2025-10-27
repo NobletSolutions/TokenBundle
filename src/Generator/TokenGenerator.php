@@ -36,7 +36,7 @@ class TokenGenerator
         $this->expiration = $expiration;
     }
 
-    public function getToken(string $uId, string $email, array $extraData = null, ?int $expiration = null, ?string $keyId = null): Token
+    public function getToken(string $uId, string $email, ?array $extraData = null, ?int $expiration = null, ?string $keyId = null): Token
     {
         $now = new DateTimeImmutable();
         $builder = $this->jwtConfig

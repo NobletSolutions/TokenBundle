@@ -7,6 +7,7 @@ use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use NS\TokenBundle\Generator\InvalidTokenException;
 use NS\TokenBundle\Generator\TokenGenerator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class TokenGeneratorTest extends TestCase
@@ -157,12 +158,8 @@ class TokenGeneratorTest extends TestCase
         self::assertNotInstanceOf(\stdClass::class, $extra['stdClass']);
     }
 
-    /**
-     * @param $token
-     *
-     * @dataProvider getInvalidTokens
-     */
-    public function testInvalidToken($token): void
+    #[DataProvider('getInvalidTokens')]
+    public function testInvalidToken(string $token): void
     {
         $this->expectException(InvalidTokenException::class);
 
@@ -171,7 +168,7 @@ class TokenGeneratorTest extends TestCase
         $generator->decryptToken($token);
     }
 
-    public function getInvalidTokens(): array
+    public static function getInvalidTokens(): array
     {
         return [
             ['something.totally.invalid'],
